@@ -7,38 +7,38 @@
   "deadline_cycles": 110,
   "operations": [
     {
-      "name": "Read_Input_Data",
-      "op_type": "memory_read",
+      "name": "Чтение_входных_данных",
+      "op_type": "чтение_памяти",
       "memory_accesses": 2,
       "branches": 0
     },
     {
-      "name": "Calculate_Parity_P1",
-      "op_type": "bitwise_xor",
+      "name": "Расчет_четности_P1",
+      "op_type": "побитовое_xor",
       "memory_accesses": 0,
       "branches": 1
     },
     {
-      "name": "Calculate_Parity_P2",
-      "op_type": "bitwise_xor",
+      "name": "Расчет_четности_P2",
+      "op_type": "побитовое_xor",
       "memory_accesses": 0,
       "branches": 1
     },
     {
-      "name": "Calculate_Parity_P4",
-      "op_type": "bitwise_xor",
+      "name": "Расчет_четности_P4",
+      "op_type": "побитовое_xor",
       "memory_accesses": 0,
       "branches": 1
     },
     {
-      "name": "Assemble_Hamming_Code",
-      "op_type": "arithmetic",
+      "name": "Сборка_кода_Хэмминга",
+      "op_type": "арифметика",
       "memory_accesses": 1,
       "branches": 0
     },
     {
-      "name": "Write_Encoded_Frame",
-      "op_type": "memory_write",
+      "name": "Запись_кадра_данных",
+      "op_type": "запись_памяти",
       "memory_accesses": 2,
       "branches": 0
     }

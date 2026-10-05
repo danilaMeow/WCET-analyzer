@@ -43,23 +43,29 @@ def load_data_from_json(file_path: str) -> tuple[ProcessorModel, List[Operation]
     deadline = data.get("deadline_cycles", 0)
     return processor, operations, deadline
 
+
 def best_case(op: Operation, model: ProcessorModel) -> int:
     return model.base_op_cost
+
 
 def worst_case(op: Operation, model: ProcessorModel) -> int:
     memory_penalty = op.memory_accesses * model.cache_miss_penalty
     branch_penalty = op.branches * model.branch_mispredict_penalty
     return model.base_op_cost + memory_penalty + branch_penalty
 
+
 def bcet(fragment: List[Operation], model: ProcessorModel) -> int:
     return sum(best_case(op, model) for op in fragment)
+
 
 def wcet(fragment: List[Operation], model: ProcessorModel) -> int:
     return sum(worst_case(op, model) for op in fragment)
 
+
 def nondeterminism_ratio(fragment: List[Operation], model: ProcessorModel) -> float:
     b = bcet(fragment, model)
     return wcet(fragment, model) / b if b != 0 else 0.0
+
 
 def source_breakdown(fragment: List[Operation], model: ProcessorModel) -> Dict[str, int]:
     mem_penalty = sum(op.memory_accesses * model.cache_miss_penalty for op in fragment)
@@ -71,16 +77,17 @@ def source_breakdown(fragment: List[Operation], model: ProcessorModel) -> Dict[s
         "branch_penalty": branch_penalty
     }
 
+
 def main():
     file_path = "data/variant_coding.json" if len(sys.argv) < 2 else sys.argv[1]
     processor, fragment, deadline = load_data_from_json(file_path)
 
     print("=" * 70)
-    print(" АНАЛИЗ ВРЕМЕНИ ВЫПОЛНЕНИЯ (WCET / BCET)")
-    print(" Вариант: Кодирование сообщения помехоустойчивым кодом")
+    print(" РђРќРђР›РР— Р’Р Р•РњР•РќР Р’Р«РџРћР›РќР•РќРРЇ (WCET / BCET)")
+    print(" Р’Р°СЂРёР°РЅС‚: РљРѕРґРёСЂРѕРІР°РЅРёРµ СЃРѕРѕР±С‰РµРЅРёСЏ РїРѕРјРµС…РѕСѓСЃС‚РѕР№С‡РёРІС‹Рј РєРѕРґРѕРј")
     print("=" * 70)
     
-    print(f"\n{'Операция':<25} | {'Тип':<15} | {'BCET (такты)':<12} | {'WCET (такты)':<12}")
+    print(f"\n{'РћРїРµСЂР°С†РёСЏ':<25} | {'РўРёРї':<15} | {'BCET (С‚Р°РєС‚С‹)':<12} | {'WCET (С‚Р°РєС‚С‹)':<12}")
     print("-" * 70)
     for op in fragment:
         b = best_case(op, processor)
@@ -93,21 +100,21 @@ def main():
     ratio = nondeterminism_ratio(fragment, processor)
     breakdown = source_breakdown(fragment, processor)
 
-    print(f"\nИТОГОВЫЕ РЕЗУЛЬТАТЫ:")
-    print(f"  • BCET (Лучшее время):             {total_bcet} тактов")
-    print(f"  • WCET (Наихудшее время):          {total_wcet} тактов")
-    print(f"  • Коэффициент недетерминизма:       {ratio:.2f}")
-    print(f"  • Вклад базовых операций:           {breakdown['base_cost']} тактов")
-    print(f"  • Вклад задержек памяти (кэш):     {breakdown['memory_penalty']} тактов")
-    print(f"  • Вклад ошибок ветвления:          {breakdown['branch_penalty']} тактов")
+    print(f"\nРРўРћР“РћР’Р«Р• Р Р•Р—РЈР›Р¬РўРђРўР«:")
+    print(f"  вЂў BCET (Р›СѓС‡С€РµРµ РІСЂРµРјСЏ):             {total_bcet} С‚Р°РєС‚РѕРІ")
+    print(f"  вЂў WCET (РќР°РёС…СѓРґС€РµРµ РІСЂРµРјСЏ):          {total_wcet} С‚Р°РєС‚РѕРІ")
+    print(f"  вЂў РљРѕСЌС„С„РёС†РёРµРЅС‚ РЅРµРґРµС‚РµСЂРјРёРЅРёР·РјР°:       {ratio:.2f}")
+    print(f"  вЂў Р’РєР»Р°Рґ Р±Р°Р·РѕРІС‹С… РѕРїРµСЂР°С†РёР№:           {breakdown['base_cost']} С‚Р°РєС‚РѕРІ")
+    print(f"  вЂў Р’РєР»Р°Рґ Р·Р°РґРµСЂР¶РµРє РїР°РјСЏС‚Рё (РєСЌС€):     {breakdown['memory_penalty']} С‚Р°РєС‚РѕРІ")
+    print(f"  вЂў Р’РєР»Р°Рґ РѕС€РёР±РѕРє РІРµС‚РІР»РµРЅРёСЏ:          {breakdown['branch_penalty']} С‚Р°РєС‚РѕРІ")
     print("-" * 70)
 
     if deadline > 0:
-        print(f"Проверка дедлайна ({deadline} тактов):")
+        print(f"РџСЂРѕРІРµСЂРєР° РґРµРґР»Р°Р№РЅР° ({deadline} С‚Р°РєС‚РѕРІ):")
         if total_wcet <= deadline:
-            print("  [УСПЕХ] Фрагмент гарантированно укладывается в дедлайн в наихудшем случае.")
+            print("  [РЈРЎРџР•РҐ] Р¤СЂР°РіРјРµРЅС‚ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅРѕ СѓРєР»Р°РґС‹РІР°РµС‚СЃСЏ РІ РґРµРґР»Р°Р№РЅ РІ РЅР°РёС…СѓРґС€РµРј СЃР»СѓС‡Р°Рµ.")
         else:
-            print("  [ОШИБКА] Фрагмент НЕ укладывается в дедлайн в наихудшем случае!")
+            print("  [РћРЁРР‘РљРђ] Р¤СЂР°РіРјРµРЅС‚ РќР• СѓРєР»Р°РґС‹РІР°РµС‚СЃСЏ РІ РґРµРґР»Р°Р№РЅ РІ РЅР°РёС…СѓРґС€РµРј СЃР»СѓС‡Р°Рµ!")
     print("=" * 70)
 
 

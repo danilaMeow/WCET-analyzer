@@ -1,0 +1,46 @@
+{
+  "processor_model": {
+    "base_op_cost": 1,
+    "cache_miss_penalty": 20,
+    "branch_mispredict_penalty": 10
+  },
+  "deadline_cycles": 110,
+  "operations": [
+    {
+      "name": "Read_Input_Data",
+      "op_type": "memory_read",
+      "memory_accesses": 2,
+      "branches": 0
+    },
+    {
+      "name": "Calculate_Parity_P1",
+      "op_type": "bitwise_xor",
+      "memory_accesses": 0,
+      "branches": 1
+    },
+    {
+      "name": "Calculate_Parity_P2",
+      "op_type": "bitwise_xor",
+      "memory_accesses": 0,
+      "branches": 1
+    },
+    {
+      "name": "Calculate_Parity_P4",
+      "op_type": "bitwise_xor",
+      "memory_accesses": 0,
+      "branches": 1
+    },
+    {
+      "name": "Assemble_Hamming_Code",
+      "op_type": "arithmetic",
+      "memory_accesses": 1,
+      "branches": 0
+    },
+    {
+      "name": "Write_Encoded_Frame",
+      "op_type": "memory_write",
+      "memory_accesses": 2,
+      "branches": 0
+    }
+  ]
+}

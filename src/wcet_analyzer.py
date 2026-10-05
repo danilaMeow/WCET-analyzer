@@ -56,3 +56,17 @@ def bcet(fragment: List[Operation], model: ProcessorModel) -> int:
 
 def wcet(fragment: List[Operation], model: ProcessorModel) -> int:
     return sum(worst_case(op, model) for op in fragment)
+
+def nondeterminism_ratio(fragment: List[Operation], model: ProcessorModel) -> float:
+    b = bcet(fragment, model)
+    return wcet(fragment, model) / b if b != 0 else 0.0
+
+def source_breakdown(fragment: List[Operation], model: ProcessorModel) -> Dict[str, int]:
+    mem_penalty = sum(op.memory_accesses * model.cache_miss_penalty for op in fragment)
+    branch_penalty = sum(op.branches * model.branch_mispredict_penalty for op in fragment)
+    base_cost = sum(model.base_op_cost for op in fragment)
+    return {
+        "base_cost": base_cost,
+        "memory_penalty": mem_penalty,
+        "branch_penalty": branch_penalty
+    }

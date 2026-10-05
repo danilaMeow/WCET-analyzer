@@ -70,3 +70,46 @@ def source_breakdown(fragment: List[Operation], model: ProcessorModel) -> Dict[s
         "memory_penalty": mem_penalty,
         "branch_penalty": branch_penalty
     }
+
+def main():
+    file_path = "data/variant_coding.json" if len(sys.argv) < 2 else sys.argv[1]
+    processor, fragment, deadline = load_data_from_json(file_path)
+
+    print("=" * 70)
+    print(" АНАЛИЗ ВРЕМЕНИ ВЫПОЛНЕНИЯ (WCET / BCET)")
+    print(" Вариант: Кодирование сообщения помехоустойчивым кодом")
+    print("=" * 70)
+    
+    print(f"\n{'Операция':<25} | {'Тип':<15} | {'BCET (такты)':<12} | {'WCET (такты)':<12}")
+    print("-" * 70)
+    for op in fragment:
+        b = best_case(op, processor)
+        w = worst_case(op, processor)
+        print(f"{op.name:<25} | {op.op_type:<15} | {b:<12} | {w:<12}")
+    print("-" * 70)
+
+    total_bcet = bcet(fragment, processor)
+    total_wcet = wcet(fragment, processor)
+    ratio = nondeterminism_ratio(fragment, processor)
+    breakdown = source_breakdown(fragment, processor)
+
+    print(f"\nИТОГОВЫЕ РЕЗУЛЬТАТЫ:")
+    print(f"  • BCET (Лучшее время):             {total_bcet} тактов")
+    print(f"  • WCET (Наихудшее время):          {total_wcet} тактов")
+    print(f"  • Коэффициент недетерминизма:       {ratio:.2f}")
+    print(f"  • Вклад базовых операций:           {breakdown['base_cost']} тактов")
+    print(f"  • Вклад задержек памяти (кэш):     {breakdown['memory_penalty']} тактов")
+    print(f"  • Вклад ошибок ветвления:          {breakdown['branch_penalty']} тактов")
+    print("-" * 70)
+
+    if deadline > 0:
+        print(f"Проверка дедлайна ({deadline} тактов):")
+        if total_wcet <= deadline:
+            print("  [УСПЕХ] Фрагмент гарантированно укладывается в дедлайн в наихудшем случае.")
+        else:
+            print("  [ОШИБКА] Фрагмент НЕ укладывается в дедлайн в наихудшем случае!")
+    print("=" * 70)
+
+
+if __name__ == "__main__":
+    main()

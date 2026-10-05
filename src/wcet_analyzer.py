@@ -42,3 +42,17 @@ def load_data_from_json(file_path: str) -> tuple[ProcessorModel, List[Operation]
     
     deadline = data.get("deadline_cycles", 0)
     return processor, operations, deadline
+
+def best_case(op: Operation, model: ProcessorModel) -> int:
+    return model.base_op_cost
+
+def worst_case(op: Operation, model: ProcessorModel) -> int:
+    memory_penalty = op.memory_accesses * model.cache_miss_penalty
+    branch_penalty = op.branches * model.branch_mispredict_penalty
+    return model.base_op_cost + memory_penalty + branch_penalty
+
+def bcet(fragment: List[Operation], model: ProcessorModel) -> int:
+    return sum(best_case(op, model) for op in fragment)
+
+def wcet(fragment: List[Operation], model: ProcessorModel) -> int:
+    return sum(worst_case(op, model) for op in fragment)

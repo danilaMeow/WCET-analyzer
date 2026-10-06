@@ -107,14 +107,14 @@ def main():
     print(" Вариант: Кодирование сообщения помехоустойчивым кодом")
     
     # Таблица 
-    print("_" * 70)
+    print("_" * 73)
     print(f"{'Операция':<25} | {'Тип':<15} | {'BCET (такты)':<12} | {'WCET (такты)':<12}")
-    print("-" * 70)
+    print("-" * 73)
     for op in fragment:
         b = best_case(op, processor)
         w = worst_case(op, processor)
         print(f"{op.name:<25} | {op.op_type:<15} | {b:<12} | {w:<12}")
-    print("-" * 70)
+    print("‾" * 73)
 
     # Вычисление общих показателей
     total_bcet = bcet(fragment, processor)
